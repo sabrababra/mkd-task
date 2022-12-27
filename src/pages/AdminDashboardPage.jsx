@@ -5,6 +5,8 @@ import { IoIosArrowDown } from 'react-icons/io'
 import TableRow from "../components/TableRow";
 import MkdSDK from "../utils/MkdSDK";
 import moment from "moment/moment";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 const AdminDashboardPage = () => {
 
   const [data, setData] = React.useState({});
@@ -82,7 +84,8 @@ const AdminDashboardPage = () => {
           </div>
 
           {/* Table */}
-          <div className=" mt-10 ">
+          <DndProvider backend={HTML5Backend}>
+					<div className=" mt-10 ">
             <div className="overflow-x-auto">
               <table className=" table w-full make-design "  >
                 {/* <!-- head --> */}
@@ -110,6 +113,8 @@ const AdminDashboardPage = () => {
               </table>
             </div>
           </div>
+				</DndProvider>
+          
           <div className="btn-group grid grid-cols-2 mt-5 pb-7 w-4/12 mx-auto">
             <button className="btn btn-outline " onClick={handlePrev}>Previous page</button>
             <button className="btn btn-outline" onClick={handleNext}>Next</button>
