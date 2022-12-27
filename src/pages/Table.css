@@ -1,0 +1,9 @@
+/* .make-design {
+    border-collapse: separate;
+    border-spacing: 0 15px;
+} */
+
+.make-design tbody tr {
+    border: 1px solid #696969;
+
+}
