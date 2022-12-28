@@ -10,7 +10,7 @@ const Navbar = () => {
         <p className=" text-3xl font-extrabold text-white ">APP</p>
       </div>
       <div className="navbar-end">
-        <button className=" bg-[#9bff00] w-[128px] h-[48px] flex justify-center items-center rounded-full " onClick={() => {
+        <button className=" bg-[#9bff00] text-black border-2 border-[#9bff00] hover:bg-black hover:text-[#9bff00] w-[128px] h-[48px] flex justify-center items-center rounded-full " onClick={() => {
           dispatch({type: "LOGOUT",});
           window.location.href = "/admin/login";
         }} > <FiUser className=' w-10 ' ></FiUser> Logout</button>

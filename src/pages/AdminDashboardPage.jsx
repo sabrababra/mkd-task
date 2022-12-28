@@ -5,8 +5,8 @@ import { IoIosArrowDown } from 'react-icons/io'
 import TableRow from "../components/TableRow";
 import MkdSDK from "../utils/MkdSDK";
 import moment from "moment/moment";
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+
 const AdminDashboardPage = () => {
 
   const [data, setData] = React.useState({});
@@ -18,7 +18,7 @@ const AdminDashboardPage = () => {
   let sdk = new MkdSDK();
   sdk.setTable('video');
   React.useEffect(() => {
-    sdk.callRestAPI({ page:1, limit: 10, payload: {} }, 'PAGINATE')
+    sdk.callRestAPI({ page: 1, limit: 10, payload: {} }, 'PAGINATE')
       .then(res => {
         console.log('PAGINATE', res);
         setData(res.list);
@@ -32,8 +32,8 @@ const AdminDashboardPage = () => {
       })
   }, [])
 
-  const handleNext=()=>{
-    sdk.callRestAPI({ page:page+1, limit: 10, payload: {} }, 'PAGINATE')
+  const handleNext = () => {
+    sdk.callRestAPI({ page: page + 1, limit: 10, payload: {} }, 'PAGINATE')
       .then(res => {
         console.log('PAGINATE', res);
         setData(res.list);
@@ -46,8 +46,9 @@ const AdminDashboardPage = () => {
         console.log(error);
       })
   }
-  const handlePrev=()=>{
-    sdk.callRestAPI({ page:page-1, limit: 10, payload: {} }, 'PAGINATE')
+
+  const handlePrev = () => {
+    sdk.callRestAPI({ page: page - 1, limit: 10, payload: {} }, 'PAGINATE')
       .then(res => {
         console.log('PAGINATE', res);
         setData(res.list);
@@ -60,6 +61,13 @@ const AdminDashboardPage = () => {
         console.log(error);
       })
   }
+
+  const handleDragEnd = (results) => {
+    let tempUser = [...data];
+    let [selectedRow] = tempUser.splice(results.source.index, 1);
+    tempUser.splice(results.destination.index, 0, selectedRow);
+    setData(tempUser);
+  };
 
   return (
 
@@ -84,37 +92,47 @@ const AdminDashboardPage = () => {
           </div>
 
           {/* Table */}
-          <DndProvider backend={HTML5Backend}>
-					<div className=" mt-10 ">
-            <div className="overflow-x-auto">
-              <table className=" table w-full make-design "  >
-                {/* <!-- head --> */}
-                <thead  >
-                  <tr className="text-[#696969] font-thin text-[16px] ">
-                    <th className=" bg-transparent ">#</th>
-                    <th className=" bg-transparent ">Title</th>
-                    <th className=" bg-transparent ">Author</th>
 
-                    <th className=" bg-transparent flex items-center  ">Most Liked <IoIosArrowDown className="w-8 ml-1" /> </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    data?.length > 0
-                      ?
-                      data?.map((item) => <TableRow
-                        key={item.id}
-                        item={item}
-                      ></TableRow>) :
-                      <p className="text-white font-bold text-xl text-center" >No data found</p>
-                  }
+          <DragDropContext onDragEnd={(results) => handleDragEnd(results)}>
+            <div className=" mt-10 ">
+              <div className="overflow-x-auto">
+                <table className=" table w-full make-design">
+                  {/* <!-- head --> */}
+                  <thead  >
+                    <tr className="text-[#696969] font-thin text-[16px] ">
+                      <th className=" bg-transparent ">#</th>
+                      <th className=" bg-transparent ">Title</th>
+                      <th className=" bg-transparent ">Author</th>
 
-                </tbody>
-              </table>
+                      <th className=" bg-transparent flex items-center  ">Most Liked <IoIosArrowDown className="w-8 ml-1" /> </th>
+                    </tr>
+                  </thead>
+
+                  <Droppable droppableId="tbody">
+                    {(provided) => (
+                      <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                        {
+                          data?.length > 0
+                            ?
+                            data?.map((item, index) => <TableRow
+                              key={item.id}
+                              item={item}
+                              index={index}
+                            ></TableRow>) :
+                            <p className="text-white font-bold text-xl text-center" >No data found</p>
+                        }
+                        {provided.placeholder}
+                      </tbody>
+
+                    )
+                    }
+                  </Droppable>
+                </table>
+              </div>
             </div>
-          </div>
-				</DndProvider>
-          
+          </DragDropContext>
+
+
           <div className="btn-group grid grid-cols-2 mt-5 pb-7 w-4/12 mx-auto">
             <button className="btn btn-outline " onClick={handlePrev}>Previous page</button>
             <button className="btn btn-outline" onClick={handleNext}>Next</button>
